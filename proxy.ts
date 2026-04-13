@@ -26,7 +26,7 @@ function basicAuth(req: NextRequest) {
   return user === ADMIN_USER && pass === ADMIN_PASS;
 }
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   if (pathname === '/api/chat' && req.method === 'POST') {
