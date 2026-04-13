@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PwT Next
 
-## Getting Started
+Website chính thức của PwT Tech, xây dựng bằng Next.js 16, React 19, Tailwind CSS 4 và SQLite.
 
-First, run the development server:
+## Tính năng
+
+- Trang landing page giới thiệu dịch vụ
+- Live chat tích hợp AI (DeepSeek) với fallback chuyển tiếp Telegram
+- Bảng điều khiển admin quản lý hội thoại (Basic Auth)
+- Các trang pháp lý: Chính sách bảo mật, Điều khoản dịch vụ, Chính sách hoàn tiền, v.v.
+
+## Yêu cầu
+
+- Node.js >= 20
+- npm >= 10
+
+## Cài đặt
+
+```bash
+npm install
+cp .env.example .env
+# Điền các giá trị vào .env
+```
+
+## Chạy development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Mở [http://localhost:3000](http://localhost:3000) trên trình duyệt.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Build & Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+## Biến môi trường
 
-To learn more about Next.js, take a look at the following resources:
+Xem file `.env.example` để biết các biến cần thiết.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Admin
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Truy cập `/admin/chat` với Basic Auth (cấu hình trong `middleware.ts`).
