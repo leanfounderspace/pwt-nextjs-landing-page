@@ -1,5 +1,4 @@
 'use client';
-import Image from 'next/image';
 
 const LOGOS = [
   { src: 'https://1000logos.net/wp-content/uploads/2021/05/Stripe-logo.png', alt: 'Stripe' },
@@ -55,7 +54,7 @@ export default function HeroSection() {
                 </div>
                 {/* CTA */}
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <button onClick={() => (window as any).selectBundleAndScroll?.()} className="inline-flex items-center justify-center gap-2 bg-white text-gray-900 px-6 py-3 rounded-full font-bold text-sm hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 whitespace-nowrap">
+                  <button onClick={() => window.selectBundleAndScroll?.()} className="inline-flex items-center justify-center gap-2 bg-white text-gray-900 px-6 py-3 rounded-full font-bold text-sm hover:bg-gray-100 transition-all shadow-xl hover:shadow-2xl transform hover:scale-105 whitespace-nowrap">
                     Get Started Now
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                   </button>

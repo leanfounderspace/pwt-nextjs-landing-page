@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 
+import { CONTACT_FORM_SOURCE } from '@/lib/contact';
+
 type PkgKey = 'payment' | 'infrastructure' | 'marketing';
 interface Pkg { selected: boolean; price: number; name: string; }
 interface Message { role: 'user' | 'assistant'; content: string; }
@@ -19,6 +21,8 @@ export default function PackageSection() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [submittingOrder, setSubmittingOrder] = useState(false);
+  const [orderFeedback, setOrderFeedback] = useState<{ status: 'success' | 'error'; message: string } | null>(null);
   const [identified, setIdentified] = useState(false);
   const [infoForm, setInfoForm] = useState({ name: '', contact: '' });
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -75,12 +79,11 @@ export default function PackageSection() {
     try { localStorage.setItem('pwt-chat-session', JSON.stringify(newMessages)); } catch {}
     setLoading(true);
     try {
-      const res = await fetch('/api/chat', {
+      await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: newMessages, sessionId: sessionId.current }),
       });
-      const data = await res.json();
       // AI reply will come via SSE stream, no need to append here
     } catch {
       setMessages(m => [...m, { role: 'assistant', content: 'Unable to connect. Please try again.' }]);
@@ -114,7 +117,7 @@ export default function PackageSection() {
 
   // Expose selectBundleAndScroll globally
   useEffect(() => {
-    (window as any).selectBundleAndScroll = () => {
+    window.selectBundleAndScroll = () => {
       setBundle(true);
       setPkgs(p => Object.fromEntries(Object.entries(p).map(([k,v]) => [k,{...v,selected:true}])) as Record<PkgKey,Pkg>);
       setTimeout(() => document.getElementById('orderForm')?.scrollIntoView({behavior:'smooth'}), 100);
@@ -163,13 +166,63 @@ export default function PackageSection() {
 
   const total = bundle ? 2499 : Object.values(pkgs).filter(p=>p.selected).reduce((s,p)=>s+p.price,0);
   const hasSelection = bundle || Object.values(pkgs).some(p=>p.selected);
+  const selectedPackages = Object.entries(pkgs)
+    .filter(([, value]) => value.selected)
+    .map(([key, value]) => ({ key, name: value.name }));
 
-  const submitOrder = (e: React.FormEvent<HTMLFormElement>) => {
+  const submitOrder = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    alert('Thank you! Your request has been submitted. We will contact you shortly.');
-    e.currentTarget.reset();
-    setBundle(false);
-    setPkgs(INIT);
+    if (!hasSelection || submittingOrder) return;
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const payload = {
+      name: String(formData.get('orderName') || '').trim(),
+      email: String(formData.get('orderEmail') || '').trim(),
+      phone: String(formData.get('orderPhone') || '').trim(),
+      requirements: String(formData.get('orderRequirements') || '').trim(),
+      selectedPackages,
+      bundle,
+      total,
+      source: CONTACT_FORM_SOURCE,
+    };
+
+    setSubmittingOrder(true);
+    setOrderFeedback(null);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok || !data?.ok) {
+        throw new Error(data?.error || 'Unable to submit your request right now. Please try again.');
+      }
+
+      form.reset();
+      setBundle(false);
+      setPkgs(INIT);
+      save(INIT, false);
+      setOrderFeedback({
+        status: 'success',
+        message:
+          data.message ||
+          'Thank you. Your request has been submitted and a confirmation email is on its way.',
+      });
+    } catch (error) {
+      setOrderFeedback({
+        status: 'error',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Unable to submit your request right now. Please try again.',
+      });
+    } finally {
+      setSubmittingOrder(false);
+    }
   };
 
   const CARDS = [
@@ -350,9 +403,21 @@ export default function PackageSection() {
                     <label htmlFor="orderRequirements" className="block text-sm font-semibold text-gray-900 mb-2">Additional Requirements</label>
                     <textarea id="orderRequirements" name="orderRequirements" rows={5} className="w-full border-2 border-gray-200 px-4 py-3 text-gray-900 focus:border-gray-900 focus:outline-none transition-colors resize-none" placeholder="Tell us about your specific needs..." />
                   </div>
-                  <button type="submit" disabled={!hasSelection} className="w-full bg-gray-900 text-white px-6 sm:px-8 py-3 sm:py-4 text-sm font-semibold hover:bg-gray-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-                    Submit Request →
+                  <button type="submit" disabled={!hasSelection || submittingOrder} className="w-full bg-gray-900 text-white px-6 sm:px-8 py-3 sm:py-4 text-sm font-semibold hover:bg-gray-800 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                    {submittingOrder ? 'Sending Request...' : 'Submit Request →'}
                   </button>
+                  {orderFeedback && (
+                    <div
+                      className={`border px-4 py-3 text-sm leading-relaxed ${
+                        orderFeedback.status === 'success'
+                          ? 'border-green-200 bg-green-50 text-green-800'
+                          : 'border-red-200 bg-red-50 text-red-700'
+                      }`}
+                      role={orderFeedback.status === 'error' ? 'alert' : 'status'}
+                    >
+                      {orderFeedback.message}
+                    </div>
+                  )}
                   {!hasSelection && <p className="text-xs text-gray-500 text-center">Please select at least one package to continue</p>}
                 </form>
               </div>

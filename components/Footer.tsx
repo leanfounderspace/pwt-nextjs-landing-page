@@ -13,7 +13,7 @@ export default function Footer() {
             Building Supreme Customer Experience – Digital and Beyond
           </p>
           <button
-            onClick={() => (window as any).selectBundleAndScroll?.()}
+            onClick={() => window.selectBundleAndScroll?.()}
             className="inline-flex items-center justify-center gap-2 bg-white text-gray-900 px-8 py-3 rounded-full font-bold text-sm hover:bg-gray-100 transition-all shadow-lg hover:scale-105 mb-8"
           >
             Get Started - $2,499
