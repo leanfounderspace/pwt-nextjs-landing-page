@@ -122,6 +122,7 @@ const styles = {
   panel: {
     backgroundColor: '#f9fafb',
     border: '1px solid #e5e7eb',
+    borderRadius: '20px',
     padding: '24px',
   },
   label: {

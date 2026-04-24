@@ -31,20 +31,20 @@ export function PwtEmailLayout({
       <Body style={styles.body}>
         <Container style={styles.container}>
           <Section style={styles.shell}>
-            <Text style={styles.brand}>PwT Solutions</Text>
+            <Text style={styles.brand}>PwT Tech Solutions</Text>
             <Hr style={styles.rule} />
             <Text style={styles.title}>{title}</Text>
             <Text style={styles.intro}>{intro}</Text>
             {children}
             <Hr style={styles.footerRule} />
             <Text style={styles.footer}>
-              PwT Solutions
+              PwT Tech Solutions
               <br />
               Building Supreme Customer Experience - Digital and Beyond
             </Text>
             <Text style={styles.footerLink}>
-              <Link href="https://www.pwtsolutions.com/" style={styles.link}>
-                www.pwtsolutions.com
+              <Link href="https://pwttech.com/" style={styles.link}>
+                pwttech.com
               </Link>
             </Text>
           </Section>
@@ -71,6 +71,7 @@ const styles = {
   shell: {
     backgroundColor: '#ffffff',
     border: '1px solid #d1d5db',
+    borderRadius: '20px',
     padding: '32px',
   },
   brand: {

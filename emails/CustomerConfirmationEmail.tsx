@@ -30,7 +30,7 @@ export function CustomerConfirmationEmail({
 
   return (
     <PwtEmailLayout
-      preview="We received your request - PwT Solutions"
+      preview="We received your request - PwT Tech Solutions"
       title={`Thank you, ${firstName}`}
       intro="We received your request and our team is reviewing it now. A specialist will follow up within 24 hours."
     >
@@ -115,8 +115,8 @@ export function getCustomerConfirmationText({
     'Next step: Our team will review your request and contact you within 24 hours.',
     'This email confirms that we received your request. It is not an invoice or payment receipt.',
     '',
-    'PwT Solutions',
-    'www.pwtsolutions.com',
+    'PwT Tech Solutions',
+    'pwttech.com',
   ]
     .filter(Boolean)
     .join('\n');
@@ -126,6 +126,7 @@ const styles = {
   panel: {
     backgroundColor: '#f9fafb',
     border: '1px solid #e5e7eb',
+    borderRadius: '20px',
     padding: '24px',
   },
   label: {
